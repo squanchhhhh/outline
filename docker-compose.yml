@@ -26,12 +26,6 @@ services:
       - redis
     networks:
       - my_network
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    command: tunnel --no-autoupdate --protocol http2 run --token eyJhIjoiN2UyODczNjcyN2Y1MjQyYWJlZWY2NWNiNGJhOGJhZjAiLCJ0IjoiZGM2NzE1ZGQtMTVjZi00OWEyLTk3ZGYtNWQzNzRmYTY5YmEzIiwicyI6Ik9HRXdPV1F5TlRFdE5tSm1OaTAwTXpnNExXSmxZamN0WVRsa01UVmtOVFJrWVRVeSJ9
-    restart: always
-    networks:
-      - my_network
 
   casdoor:
     image: casbin/casdoor-all-in-one
