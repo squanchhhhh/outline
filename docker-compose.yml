@@ -9,29 +9,25 @@ services:
       - SECRET_KEY=${SECRET_KEY}
       - UTILS_SECRET=${UTILS_SECRET}
       - REDIS_URL=${REDIS_URL}
-      - URL=http://outline.a246004.org  # Outline base URL
+      - URL=http://localhost:3000  # Outline base URL
       - COLLABORATION_URL=http://localhost:3000/collaboration  # Collaboration URL
       - PGSSLMODE=disable  # Disable SSL (adjust based on your setup)
       - FORCE_HTTPS=false  # Disable HTTPS (adjust based on your needs)
       - OIDC_CLIENT_ID=outline-client
-      - OIDC_AUTH_URI=http://auth.a246004.org/login/oauth/authorize
+      - OIDC_AUTH_URI=http://casdoor:8000/login/oauth/authorize
       - OIDC_TOKEN_URI=http://casdoor:8000/api/login/oauth/access_token
       - OIDC_USERINFO_URI=http://casdoor:8000/api/userinfo
       - OIDC_CLIENT_SECRET=6cb009ffe5fba17883b432130d83512f30f41e1c
-    ports:
-      - 3000:3000  # Expose Outline on port 3000
-    depends_on:
-      - postgres
-      - minio
-      - redis
     networks:
       - my_network
+    expose:
+      - "3000"  # Expose Outline on port 3000 to other containers (not to the host directly)
 
   casdoor:
     image: casbin/casdoor-all-in-one
     container_name: casdoor
     ports:
-      - "8000:8000"  # 映射本地 8000 端口到容器 8000 端口
+      - "8000:8000"
     environment:
       - CASDOOR_UI_URL=http://localhost:8000
       - CASDOOR_API_URL=http://localhost:8000/api/v1
@@ -48,18 +44,18 @@ services:
       - POSTGRES_PASSWORD=mypassword
       - POSTGRES_DB=mydb
     volumes:
-      - /tmp/outline/postgres/data:/var/lib/postgresql/data  # Persistent Postgres data
+      - /tmp/outline/postgres/data:/var/lib/postgresql/data
     networks:
       - my_network
     ports:
-      - "5432:5432"  # Expose Postgres on port 5432
+      - "5432:5432"
 
   redis:
     image: redis
     networks:
       - my_network
     ports:
-      - "6379:6379"  # Expose Redis on port 6379
+      - "6379:6379"
 
   minio:
     image: minio/minio
@@ -67,14 +63,29 @@ services:
       - MINIO_ROOT_USER=minioadmin
       - MINIO_ROOT_PASSWORD=minioadmin
     ports:
-      - "9000:9000"  # Expose Minio on port 9000
-      - "9090:9090"  # Expose Minio console on port 9090
+      - "9000:9000"
+      - "9090:9090"
     volumes:
-      - /tmp/outline/minio/data:/data  # Persistent Minio data
-      - /tmp/outline/minio/config:/root/.minio  # Minio config
+      - /tmp/outline/minio/data:/data
+      - /tmp/outline/minio/config:/root/.minio
     networks:
       - my_network
     command: server /data --console-address ":9090"
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /tmp/outline/nginx/nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - my_network
+    depends_on:
+      - outline
+      - casdoor
 
 networks:
   my_network:
