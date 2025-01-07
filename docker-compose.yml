@@ -9,12 +9,11 @@ services:
       - SECRET_KEY=${SECRET_KEY}
       - UTILS_SECRET=${UTILS_SECRET}
       - REDIS_URL=${REDIS_URL}
-      - URL=http://outline.a246004.org # Outline base URL
-      - COLLABORATION_URL=http://localhost:3000/collaboration  # Collaboration URL
+      - URL=http://outline.a246004.com # Outline base URL
       - PGSSLMODE=disable  # Disable SSL (adjust based on your setup)
       - FORCE_HTTPS=false  # Disable HTTPS (adjust based on your needs)
       - OIDC_CLIENT_ID=outline-client
-      - OIDC_AUTH_URI=http://auth.a246004.org/login/oauth/authorize
+      - OIDC_AUTH_URI=http://auth.a246004.com/login/oauth/authorize
       - OIDC_TOKEN_URI=http://casdoor:8000/api/login/oauth/access_token
       - OIDC_USERINFO_URI=http://casdoor:8000/api/userinfo
       - OIDC_CLIENT_SECRET=6cb009ffe5fba17883b432130d83512f30f41e1c
